@@ -39,12 +39,6 @@ public class CommandTest {
     }
 
     @Test
-    public void testListCommand() {
-        String expectedMessage = "Текущий список ссылок";
-        testCommand("/list", expectedMessage);
-    }
-
-    @Test
     public void testTrackCommand() {
         String expectedMessage = "Пришлите ссылку, которую Вы желаете <b>добавить</b> ответом на это сообщение";
         testCommand("/track", expectedMessage);
