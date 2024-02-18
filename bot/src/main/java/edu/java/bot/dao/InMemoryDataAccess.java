@@ -1,11 +1,10 @@
 package edu.java.bot.dao;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Component
 public class InMemoryDataAccess implements DataAccess {
@@ -13,8 +12,9 @@ public class InMemoryDataAccess implements DataAccess {
 
     @Override
     public List<String> getList(long id) {
-        if (db.containsKey(id))
+        if (db.containsKey(id)) {
             return db.get(id);
+        }
         return null;
     }
 
@@ -30,8 +30,9 @@ public class InMemoryDataAccess implements DataAccess {
 
     @Override
     public boolean removeLink(long id, Object url) {
-        if (db.containsKey(id))
+        if (db.containsKey(id)) {
             return db.get(id).remove(url.toString());
+        }
         return false;
     }
 }

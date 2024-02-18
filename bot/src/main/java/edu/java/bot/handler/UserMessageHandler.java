@@ -12,8 +12,8 @@ import edu.java.bot.commands.StartCommand;
 import edu.java.bot.commands.TrackCommand;
 import edu.java.bot.commands.UntrackCommand;
 import edu.java.bot.dao.DataAccess;
-import org.springframework.stereotype.Component;
 import java.util.List;
+import org.springframework.stereotype.Component;
 import static edu.java.bot.utility.Utility.getChatId;
 import static edu.java.bot.utility.Utility.getTextFromReplyMessage;
 import static edu.java.bot.utility.Utility.isMessageReply;
@@ -23,14 +23,16 @@ public class UserMessageHandler implements UserMessageProcessor {
     private final DataAccess dao;
     private final List<? extends Command> commands;
 
+    String invalidCommand = "<i>Неизвестная команда, возможно Вы опечатались</i>";
+
     public UserMessageHandler(DataAccess dataAccess) {
         this.dao = dataAccess;
         this.commands = List.of(
-            new HelpCommand()
-            , new StartCommand()
-            , new TrackCommand()
-            , new UntrackCommand()
-            , new ListCommand(this.dao)
+            new HelpCommand(),
+            new StartCommand(),
+            new TrackCommand(),
+            new UntrackCommand(),
+            new ListCommand(this.dao)
         );
     }
 
@@ -46,11 +48,11 @@ public class UserMessageHandler implements UserMessageProcessor {
         }
         long chatId = getChatId(update);
         Command command = getCommandOnUpdate(update);
-        if (command != null)
+        if (command != null) {
             return command.handle(update);
-        else
-            return new SendMessage(chatId, "<i>Неизвестная команда, возможно Вы опечатались</i>")
-                .parseMode(ParseMode.HTML);
+        }
+        return new SendMessage(chatId, invalidCommand)
+            .parseMode(ParseMode.HTML);
     }
 
     private SendMessage processRepliedMessage(Update update) {
@@ -63,11 +65,11 @@ public class UserMessageHandler implements UserMessageProcessor {
         if (botText.contains("удалить")) {
             cmd = new RemoveLinkCommand(dao);
         }
-        if (cmd != null)
+        if (cmd != null) {
             return cmd.handle(update);
-        else
-            return new SendMessage(chatId, "<i>Неизвестная команда, возможно Вы опечатались</i>")
-                .parseMode(ParseMode.HTML);
+        }
+        return new SendMessage(chatId, invalidCommand)
+            .parseMode(ParseMode.HTML);
     }
 
     private Command getCommandOnUpdate(Update update) {

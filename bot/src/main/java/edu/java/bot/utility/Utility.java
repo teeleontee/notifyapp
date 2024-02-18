@@ -2,7 +2,10 @@ package edu.java.bot.utility;
 
 import com.pengrad.telegrambot.model.Update;
 
-public class Utility {
+public final class Utility {
+
+    private Utility() {
+    }
 
     public static boolean isMessageReply(Update update) {
         return update.message().replyToMessage() != null;

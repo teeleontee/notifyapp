@@ -3,11 +3,11 @@ package edu.java.bot.commands;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.dao.DataAccess;
-import org.springframework.stereotype.Component;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.springframework.stereotype.Component;
 import static edu.java.bot.utility.Utility.getChatId;
 import static edu.java.bot.utility.Utility.getTextFromUpdate;
 
@@ -19,6 +19,7 @@ public class RemoveLinkCommand implements Command {
     public RemoveLinkCommand(DataAccess dao) {
         this.dao = dao;
     }
+
     @Override
     public String command() {
         return "remove";

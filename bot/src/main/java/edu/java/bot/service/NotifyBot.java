@@ -9,10 +9,10 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.dao.DataAccess;
 import edu.java.bot.handler.UserMessageProcessor;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 public class NotifyBot implements Bot {
@@ -24,10 +24,11 @@ public class NotifyBot implements Bot {
     @Autowired
     private final DataAccess dataAccess;
 
-    public NotifyBot(@Qualifier("applicationConfig") ApplicationConfig config,
+    public NotifyBot(
+        @Qualifier("applicationConfig") ApplicationConfig config,
         UserMessageProcessor handler,
-        DataAccess dataAccess)
-    {
+        DataAccess dataAccess
+    ) {
         bot = new TelegramBot(config.getTelegramToken());
         this.handler = handler;
         this.dataAccess = dataAccess;
@@ -50,6 +51,7 @@ public class NotifyBot implements Bot {
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
+
     @Override
     public void setup() {
         bot.setUpdatesListener(this, e -> {

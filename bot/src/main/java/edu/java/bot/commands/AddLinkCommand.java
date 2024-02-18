@@ -3,11 +3,11 @@ package edu.java.bot.commands;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.dao.DataAccess;
-import org.springframework.stereotype.Component;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.springframework.stereotype.Component;
 import static edu.java.bot.utility.Utility.getChatId;
 import static edu.java.bot.utility.Utility.getTextFromUpdate;
 
@@ -42,7 +42,8 @@ public class AddLinkCommand implements Command {
             dao.addLink(chatId, url);
             return new SendMessage(
                 chatId,
-                String.format("Успешно добавили %s в список отслеживемых ссылок", url));
+                String.format("Успешно добавили %s в список отслеживемых ссылок", url)
+            );
         } catch (URISyntaxException | MalformedURLException e) {
             return new SendMessage(chatId, "Ошибка в введенном url, возможно, Вы опечатались");
         }
