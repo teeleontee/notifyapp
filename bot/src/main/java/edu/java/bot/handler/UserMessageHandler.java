@@ -23,8 +23,6 @@ public class UserMessageHandler implements UserMessageProcessor {
     private final DataAccess dao;
     private final List<? extends Command> commands;
 
-    String invalidCommand = "<i>Неизвестная команда, возможно Вы опечатались</i>";
-
     public UserMessageHandler(DataAccess dataAccess) {
         this.dao = dataAccess;
         this.commands = List.of(
@@ -80,4 +78,6 @@ public class UserMessageHandler implements UserMessageProcessor {
         }
         return null;
     }
+
+    private final String invalidCommand = "<i>Неизвестная команда, возможно Вы опечатались</i>";
 }
