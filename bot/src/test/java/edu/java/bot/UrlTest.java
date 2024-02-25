@@ -2,7 +2,7 @@ package edu.java.bot;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.commands.AddLinkCommand;
+import edu.java.bot.commands.LinkDataAccess;
 import edu.java.bot.commands.Command;
 import edu.java.bot.commands.RemoveLinkCommand;
 import edu.java.bot.handler.UserMessageProcessor;
@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UrlTest {
 
-    @Autowired AddLinkCommand addLinkCommand;
+    @Autowired LinkDataAccess addLinkCommand;
 
     @Autowired RemoveLinkCommand removeLinkCommand;
 

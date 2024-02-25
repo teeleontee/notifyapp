@@ -15,11 +15,11 @@ import static edu.java.bot.utility.Utility.getTextFromUpdate;
  * Private command for adding Urls to Dao
  */
 @Component
-public class AddLinkCommand implements Command {
+public class LinkDataAccess implements Command {
 
     private final DataAccess dao;
 
-    public AddLinkCommand(DataAccess dao) {
+    public LinkDataAccess(DataAccess dao) {
         this.dao = dao;
     }
 

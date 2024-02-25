@@ -3,7 +3,7 @@ package edu.java.bot.handler;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.commands.AddLinkCommand;
+import edu.java.bot.commands.LinkDataAccess;
 import edu.java.bot.commands.Command;
 import edu.java.bot.commands.HelpCommand;
 import edu.java.bot.commands.ListCommand;
@@ -58,7 +58,7 @@ public class UserMessageHandler implements UserMessageProcessor {
         String botText = getTextFromReplyMessage(update);
         Command cmd = null;
         if (botText.contains("добавить")) {
-            cmd = new AddLinkCommand(dao);
+            cmd = new LinkDataAccess(dao);
         }
         if (botText.contains("удалить")) {
             cmd = new RemoveLinkCommand(dao);
