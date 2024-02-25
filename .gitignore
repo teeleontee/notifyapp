@@ -32,6 +32,5 @@ build/
 .vscode/
 
 ### Resources ###
-bot/src/main/resources/
-scrapper/src/main/resources/
+bot/src/main/resources/application.properties
 
