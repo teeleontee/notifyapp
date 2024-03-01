@@ -22,24 +22,11 @@ public class LinkUpdaterScheduler {
 
     @Scheduled(fixedDelayString = "#{@'app-edu.java.configuration.ApplicationConfig'.scheduler.interval}")
     void update() {
-//        githubClient.getGithubInfo("teeleontee", "notifyapp")
-//            .subscribe(
-//                value -> System.err.printf("name: %s, id: %s%n", value.name(), value.id()),
-//                Throwable::printStackTrace
-//            );
-//        stackOverflowClient.getQuestionInfo("75734651")
-//            .subscribe(
-//                value -> {
-//                    var details = value.getDetails();
-//                    if (!details.isEmpty()) {
-//                        var first = details.getFirst();
-//                        System.err.printf("question: %s, questionId: %s, score: %s",
-//                            first.title, first.questionId, first.score
-//                        );
-//                    }
-//                },
-//                Throwable::printStackTrace
-//            );
+        githubClient.getGithubInfo("teeleontee", "notifyapp")
+            .subscribe(
+                value -> System.err.printf("name: %s, id: %s%n", value.name(), value.id()),
+                Throwable::printStackTrace
+            );
         log.debug("scheduled");
     }
 }
