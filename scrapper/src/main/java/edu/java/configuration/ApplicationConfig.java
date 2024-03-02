@@ -15,11 +15,11 @@ public record ApplicationConfig(
     Scheduler scheduler,
 
     @NotNull
-    @Value("${github-base-url}")
+    @Value("${app.github-base-url:https://api.github.com}")
     String githubBaseUrl,
 
     @NotNull
-    @Value("${stack-overflow-base-url}")
+    @Value("${app.stack-overflow-base-url:https://api.stackexchange.com/2.3}")
     String stackOverflowBaseUrl
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {

@@ -3,8 +3,8 @@ app:
     enable: true
     interval: 7s
     force-check-delay: 10s
-  github-base-url: "https://api.github.com"
-  stack-overflow-base-url: "https://api.stackexchange.com/2.3"
+  github-base-url: https://api.github.com
+  stack-overflow-base-url: https://api.stackexchange.com/2.3
 
 spring:
   application:
