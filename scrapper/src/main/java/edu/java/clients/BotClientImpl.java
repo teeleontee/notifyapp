@@ -1,7 +1,6 @@
 package edu.java.clients;
 
 import edu.java.clients.details.LinkUpdateRequest;
-import edu.java.controller.dto.request.AddLinkRequest;
 import edu.java.exceptions.ApiErrorResponse;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
