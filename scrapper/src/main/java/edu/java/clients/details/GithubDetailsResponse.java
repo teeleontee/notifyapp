@@ -1,8 +1,8 @@
-package edu.java.details;
+package edu.java.clients.details;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record GithubDetails(
+public record GithubDetailsResponse(
     @JsonProperty("owner")
     Owner owner,
 

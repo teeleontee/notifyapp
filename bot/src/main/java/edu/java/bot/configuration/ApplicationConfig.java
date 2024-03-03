@@ -18,4 +18,7 @@ public class ApplicationConfig {
 
     @Value("${name}")
     String telegramBotName;
+
+    @Value("${scrapper-base-url}")
+    String scrapperBaseUrl;
 }

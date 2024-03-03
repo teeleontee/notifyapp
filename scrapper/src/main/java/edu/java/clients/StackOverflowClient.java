@@ -1,8 +1,8 @@
 package edu.java.clients;
 
-import edu.java.details.StackOverflowDetails;
+import edu.java.clients.details.StackOverflowDetailsResponse;
 import reactor.core.publisher.Mono;
 
 public interface StackOverflowClient {
-    Mono<StackOverflowDetails> getQuestionInfo(String id);
+    Mono<StackOverflowDetailsResponse> getQuestionInfo(String id);
 }

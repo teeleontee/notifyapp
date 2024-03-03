@@ -1,9 +1,9 @@
-package edu.java.details;
+package edu.java.clients.details;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public record StackOverflowDetails(
+public record StackOverflowDetailsResponse(
     @JsonProperty("items")
     List<Item> details
 

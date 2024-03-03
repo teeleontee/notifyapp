@@ -20,7 +20,11 @@ public record ApplicationConfig(
 
     @NotNull
     @Value("${app.stack-overflow-base-url:https://api.stackexchange.com/2.3}")
-    String stackOverflowBaseUrl
+    String stackOverflowBaseUrl,
+
+    @NotNull
+    @Value("${app.bot-base-url:https://localhost:8090}")
+    String botBaseUrl
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }
