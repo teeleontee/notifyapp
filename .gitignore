@@ -32,6 +32,5 @@ build/
 .vscode/
 
 ### Resources ###
-bot/src/main/resources/application.properties
-bot/src/main/resources/application.yml
+# bot/src/main/resources/
 
