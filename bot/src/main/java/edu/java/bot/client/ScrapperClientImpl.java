@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import org.apache.kafka.common.errors.ApiException;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -24,7 +25,7 @@ public class ScrapperClientImpl implements ScrapperClient {
     private static final String CHATS_EP = "/tg-chat/{id}";
     private final WebClient scrapperWebCLient;
 
-    public ScrapperClientImpl(WebClient scrapperWebCLient) {
+    public ScrapperClientImpl(@Qualifier("scrapperWebClient") WebClient scrapperWebCLient) {
         this.scrapperWebCLient = scrapperWebCLient;
     }
 
