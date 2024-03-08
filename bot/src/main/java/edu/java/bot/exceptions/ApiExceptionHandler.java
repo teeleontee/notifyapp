@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice public class ApiExceptionHandler {
-    @ExceptionHandler(HttpMessageNotReadableException.class) @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ApiResponse(description = "Request validation error")
     public ResponseEntity<ApiErrorResponse> handleApiException(HttpMessageNotReadableException e) {
         String exceptionName = "Validation Error";
@@ -20,7 +21,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
         return getGenericApiErrorResponseEntity(e, errorCode, exceptionName);
     }
 
-    @ExceptionHandler(NoResourceFoundException.class) @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ApiResponse(description = "Resource not found")
     public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(NoResourceFoundException e) {
         String exceptionName = "Request resource was not found";
@@ -28,7 +30,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
         return getGenericApiErrorResponseEntity(e, errorCode, exceptionName);
     }
 
-    @ExceptionHandler(NullPointerException.class) @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     @ApiResponse(description = "server error")
     public ResponseEntity<ApiErrorResponse> handleServerException(NullPointerException e) {
         String exceptionName = "Internal server error occurred";
