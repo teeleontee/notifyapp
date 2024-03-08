@@ -10,7 +10,6 @@ import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.dao.DataAccess;
 import edu.java.bot.handler.UserMessageProcessor;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +17,8 @@ import org.springframework.stereotype.Component;
 public class NotifyBot implements Bot {
     private final TelegramBot bot;
 
-    @Autowired
     private final UserMessageProcessor handler;
 
-    @Autowired
     private final DataAccess dataAccess;
 
     public NotifyBot(

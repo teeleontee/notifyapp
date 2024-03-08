@@ -1,6 +1,6 @@
 package edu.java.clients;
 
-import edu.java.details.StackOverflowDetails;
+import edu.java.clients.details.StackOverflowDetailsResponse;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -16,13 +16,13 @@ public class StackOverflowClientImpl implements StackOverflowClient {
     }
 
     @Override
-    public Mono<StackOverflowDetails> getQuestionInfo(String id) {
+    public Mono<StackOverflowDetailsResponse> getQuestionInfo(String id) {
         return stackoverflowClient.get()
             .uri("/questions/{id}?site=stackoverflow", id)
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
                 clientResponse -> Mono.error(new ApiException("StackOverflow error")))
-            .bodyToMono(StackOverflowDetails.class);
+            .bodyToMono(StackOverflowDetailsResponse.class);
     }
 }
