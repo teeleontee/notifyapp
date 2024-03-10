@@ -1,5 +1,15 @@
 package edu.java.scrapper;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import liquibase.Contexts;
+import liquibase.LabelExpression;
+import liquibase.Liquibase;
+import liquibase.database.core.PostgresDatabase;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.DirectoryResourceAccessor;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -21,7 +31,17 @@ public abstract class IntegrationTest {
     }
 
     private static void runMigrations(JdbcDatabaseContainer<?> c) {
-        // ...
+        Path migrationsPath = new File(".").toPath().toAbsolutePath().resolve("../migrations/");
+        try (Connection connection = DriverManager.getConnection(c.getJdbcUrl(), c.getUsername(), c.getPassword())) {
+            PostgresDatabase db = new PostgresDatabase();
+            db.setConnection(new JdbcConnection(connection));
+
+            Liquibase liquibase = new Liquibase("master.xml",
+                new DirectoryResourceAccessor(migrationsPath), db
+            );
+            liquibase.update(new Contexts(), new LabelExpression());
+        } catch (Exception ignored) {
+        }
     }
 
     @DynamicPropertySource
