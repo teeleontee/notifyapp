@@ -1,20 +1,18 @@
-create table if not exists tg_chat
+CREATE TABLE IF NOT EXISTS tgchat
 (
-    id bigint generated alw
-)
+    id bigint PRIMARY KEY NOT NULL
+);
 
-create table if not exists link
+CREATE TABLE IF NOT EXISTS link
 (
-    id bigint primary key not null,
-    url text not null,
-    checked_time timestamp with time zone not null,
-)
+    id bigint PRIMARY KEY NOT NULL,
+    url text NOT NULL,
+    checked_time TIMESTAMP WITH TIME ZONE NOT NULL
+);
 
-create table if not exists task
+CREATE TABLE IF NOT EXISTS task
 (
-    chat_id bigint references tg_chat (id),
-    link_id bigint references link (id),
-    primary key (chat_id, link_id)
-)
-
-
+    chat_id bigint REFERENCES tgchat (id),
+    link_id bigint REFERENCES link (id),
+    PRIMARY KEY (chat_id, link_id)
+);
