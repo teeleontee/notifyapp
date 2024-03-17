@@ -40,12 +40,13 @@ public class JdbcLinkService implements LinkService {
 
     @Override
     @Transactional
-    public boolean remove(URI url) {
+    public boolean remove(long tgChatId, URI url) {
         try {
             String sql = """
-            DELETE FROM link WHERE url = ?
+            DELETE FROM task WHERE chat_id = ?
+                AND link_id = (SELECT id FROM link WHERE url = ?)
             """;
-            jdbcTemplate.update(sql, url);
+            jdbcTemplate.update(sql, tgChatId, url);
         } catch (final DataAccessException e) {
             return false;
         }

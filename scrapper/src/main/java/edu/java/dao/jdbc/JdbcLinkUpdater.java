@@ -14,12 +14,13 @@ public class JdbcLinkUpdater implements LinkUpdater {
 
     @Override
     @Transactional
-    public void update(String link) {
+    public void update(String link, String content) {
         String sql = """
             UPDATE link
             SET checked_time = NOW()
             WHERE url = ?
+            SET content = ?
             """;
-        jdbcTemplate.update(sql, link);
+        jdbcTemplate.update(sql, link, content);
     }
 }

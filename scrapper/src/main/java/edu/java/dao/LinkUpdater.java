@@ -1,5 +1,5 @@
 package edu.java.dao;
 
 public interface LinkUpdater {
-    void update(String link);
+    void update(String link, String content);
 }

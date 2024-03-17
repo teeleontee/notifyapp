@@ -7,7 +7,7 @@ import java.util.List;
 public interface LinkService {
     boolean add(long tgChatId, URI url);
 
-    boolean remove(URI url);
+    boolean remove(long tgChatId, URI url);
 
     List<Link> listAll(long tgChatId);
 }

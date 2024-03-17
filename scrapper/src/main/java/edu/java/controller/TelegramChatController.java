@@ -1,5 +1,6 @@
 package edu.java.controller;
 
+import edu.java.dao.TgChatService;
 import edu.java.exceptions.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tg-chat")
 public class TelegramChatController {
+
+    private final TgChatService service;
+
+    public TelegramChatController(TgChatService service) {
+        this.service = service;
+    }
+
     @Operation(summary = "Зарегистрировать чат")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Чат зарегистрирован", content = {
@@ -26,6 +34,7 @@ public class TelegramChatController {
     })
     @PostMapping("/{id}")
     public ResponseEntity<?> registerChat(@PathVariable long id) {
+        service.register(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -41,6 +50,7 @@ public class TelegramChatController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChat(@PathVariable long id) {
+        service.unregister(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
