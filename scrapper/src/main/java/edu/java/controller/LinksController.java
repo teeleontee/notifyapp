@@ -5,7 +5,6 @@ import edu.java.controller.dto.request.RemoveLinkRequest;
 import edu.java.controller.dto.response.LinkResponse;
 import edu.java.controller.dto.response.ListLinksResponse;
 import edu.java.dao.LinkService;
-import edu.java.dao.dto.Link;
 import edu.java.exceptions.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,8 +37,12 @@ public class LinksController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     public ResponseEntity<ListLinksResponse> getLinks(@RequestHeader("Tg-Chat-Id") long id) {
-        List<Link> links = service.listAll(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        List<LinkResponse> list = service.listAll(id)
+            .stream()
+            .map(link -> new LinkResponse(id, link.url()))
+            .toList();
+        ListLinksResponse response = new ListLinksResponse(list.size(), list);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")

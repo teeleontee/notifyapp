@@ -1,4 +1,6 @@
 package edu.java.dao.dto;
 
-public record Link(String url) {
+import java.net.URI;
+
+public record Link(URI url) {
 }

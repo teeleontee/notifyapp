@@ -3,6 +3,7 @@ package edu.java.dao.jdbc;
 import edu.java.dao.LinkService;
 import edu.java.dao.dto.Link;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -61,8 +62,16 @@ public class JdbcLinkService implements LinkService {
             JOIN link l ON t.link_id = l.id
             WHERE t.chat_id = %s
             """, tgChatId);
-        return jdbcTemplate.query(sql, (resultSet, i) -> new Link(
-            resultSet.getString("url")
-        ));
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            try {
+                return new Link(
+                        resultSet.getURL("url").toURI()
+                );
+            } catch (final URISyntaxException e) {
+                // should never happen, because database contains
+                // only valid uri's
+                return null;
+            }
+        });
     }
 }
