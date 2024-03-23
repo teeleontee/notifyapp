@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS link
 (
     id SERIAL NOT NULL,
     url text NOT NULL,
-    content text NOT NULL,
+    content text,
     checked_time TIMESTAMP WITH TIME ZONE NOT NULL,
     PRIMARY KEY (id)
 );

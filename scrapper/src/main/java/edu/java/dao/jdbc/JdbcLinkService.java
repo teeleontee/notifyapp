@@ -21,37 +21,31 @@ public class JdbcLinkService implements LinkService {
 
     @Override
     @Transactional
-    public boolean add(long tgChatId, URI url) {
-        try {
-            String sql = """
+    public void add(long tgChatId, URI url) {
+        String sql = String.format("""
                 WITH inserted_link AS (
                   INSERT INTO link (url, checked_time)
-                  VALUES (?, NOW())
+                  VALUES ('%s', NOW())
                   RETURNING id
                 )
                 INSERT INTO task (chat_id, link_id)
-                SELECT ?, id FROM inserted_link;
-                """;
-            jdbcTemplate.update(sql, url, tgChatId);
-        } catch (final DataAccessException e) {
-            return false;
+                SELECT %d, id FROM inserted_link;
+                """, url, tgChatId);
+        try {
+            jdbcTemplate.update(sql);
+        } catch (DataAccessException e) {
+            System.err.println("da exception" + e.getMessage());
         }
-        return true;
     }
 
     @Override
     @Transactional
-    public boolean remove(long tgChatId, URI url) {
-        try {
-            String sql = """
+    public void remove(long tgChatId, URI url) {
+        String sql = """
             DELETE FROM task WHERE chat_id = ?
                 AND link_id = (SELECT id FROM link WHERE url = ?)
             """;
-            jdbcTemplate.update(sql, tgChatId, url);
-        } catch (final DataAccessException e) {
-            return false;
-        }
-        return true;
+        jdbcTemplate.update(sql, tgChatId, url);
     }
 
     @Override
@@ -60,18 +54,23 @@ public class JdbcLinkService implements LinkService {
         String sql = String.format("""
             SELECT l.url FROM task t
             JOIN link l ON t.link_id = l.id
-            WHERE t.chat_id = %s
+            WHERE t.chat_id = %d
             """, tgChatId);
-        return jdbcTemplate.query(sql, (resultSet, i) -> {
-            try {
-                return new Link(
-                        resultSet.getURL("url").toURI()
-                );
-            } catch (final URISyntaxException e) {
-                // should never happen, because database contains
-                // only valid uri's
-                return null;
-            }
-        });
+        try {
+            return jdbcTemplate.query(sql, (resultSet, i) -> {
+                try {
+                    return new Link(
+                        URI.create(resultSet.getString("url"))
+                    );
+                } catch (final IllegalArgumentException e) {
+                    // should never happen, because database contains
+                    // only valid uri's
+                    return null;
+                }
+            });
+        } catch (DataAccessException e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
     }
 }

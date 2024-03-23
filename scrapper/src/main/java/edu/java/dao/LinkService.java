@@ -5,9 +5,9 @@ import java.net.URI;
 import java.util.List;
 
 public interface LinkService {
-    boolean add(long tgChatId, URI url);
+    void add(long tgChatId, URI url);
 
-    boolean remove(long tgChatId, URI url);
+    void remove(long tgChatId, URI url);
 
     List<Link> listAll(long tgChatId);
 }
