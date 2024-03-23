@@ -3,7 +3,6 @@ package edu.java.dao.jdbc;
 import edu.java.dao.LinkService;
 import edu.java.dao.dto.Link;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,14 +22,14 @@ public class JdbcLinkService implements LinkService {
     @Transactional
     public void add(long tgChatId, URI url) {
         String sql = String.format("""
-                WITH inserted_link AS (
-                  INSERT INTO link (url, checked_time)
-                  VALUES ('%s', NOW())
-                  RETURNING id
-                )
-                INSERT INTO task (chat_id, link_id)
-                SELECT %d, id FROM inserted_link;
-                """, url, tgChatId);
+            WITH inserted_link AS (
+              INSERT INTO link (url, checked_time)
+              VALUES ('%s', NOW())
+              RETURNING id
+            )
+            INSERT INTO task (chat_id, link_id)
+            SELECT %d, id FROM inserted_link;
+            """, url, tgChatId);
         try {
             jdbcTemplate.update(sql);
         } catch (DataAccessException e) {
