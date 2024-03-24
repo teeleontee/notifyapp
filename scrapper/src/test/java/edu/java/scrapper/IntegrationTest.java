@@ -15,10 +15,13 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import javax.sql.DataSource;
 
 @Testcontainers
 public abstract class IntegrationTest {
     public static PostgreSQLContainer<?> POSTGRES;
+
+    public static DataSource dataSource;
 
     static {
         POSTGRES = new PostgreSQLContainer<>("postgres:15")
@@ -26,7 +29,6 @@ public abstract class IntegrationTest {
             .withUsername("postgres")
             .withPassword("postgres");
         POSTGRES.start();
-
         runMigrations(POSTGRES);
     }
 

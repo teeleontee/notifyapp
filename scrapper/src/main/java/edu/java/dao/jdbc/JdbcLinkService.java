@@ -40,11 +40,11 @@ public class JdbcLinkService implements LinkService {
     @Override
     @Transactional
     public void remove(long tgChatId, URI url) {
-        String sql = """
-            DELETE FROM task WHERE chat_id = ?
-                AND link_id = (SELECT id FROM link WHERE url = ?)
-            """;
-        jdbcTemplate.update(sql, tgChatId, url);
+        String sql = String.format("""
+            DELETE FROM task WHERE chat_id = %d
+                AND link_id = (SELECT id FROM link WHERE url = '%s')
+            """, tgChatId, url);
+        jdbcTemplate.update(sql);
     }
 
     @Override
