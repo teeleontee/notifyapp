@@ -10,6 +10,7 @@ import liquibase.Liquibase;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.DirectoryResourceAccessor;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -41,6 +42,7 @@ public abstract class IntegrationTest {
             );
             liquibase.update(new Contexts(), new LabelExpression());
         } catch (Exception ignored) {
+            Assertions.fail();
         }
     }
 
