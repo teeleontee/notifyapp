@@ -4,18 +4,19 @@ import java.io.File;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import javax.sql.DataSource;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.DirectoryResourceAccessor;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import javax.sql.DataSource;
 
 @Testcontainers
 public abstract class IntegrationTest {
@@ -43,6 +44,7 @@ public abstract class IntegrationTest {
             );
             liquibase.update(new Contexts(), new LabelExpression());
         } catch (Exception ignored) {
+            Assertions.fail();
         }
     }
 

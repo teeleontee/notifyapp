@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tg-chat")
 public class TelegramChatController {
 
-    private final TgChatService service;
+    private final TgChatService tgChatService;
 
     public TelegramChatController(TgChatService service) {
-        this.service = service;
+        this.tgChatService = service;
     }
 
     @Operation(summary = "Зарегистрировать чат")
@@ -34,7 +34,7 @@ public class TelegramChatController {
     })
     @PostMapping("/{id}")
     public ResponseEntity<?> registerChat(@PathVariable long id) {
-        service.register(id);
+        tgChatService.register(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -50,7 +50,7 @@ public class TelegramChatController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChat(@PathVariable long id) {
-        service.unregister(id);
+        tgChatService.unregister(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

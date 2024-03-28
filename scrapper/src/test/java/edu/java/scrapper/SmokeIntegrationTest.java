@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers public class SmokeIntegrationTest extends IntegrationTest {
+@Testcontainers
+public class SmokeIntegrationTest extends IntegrationTest {
     @Test public void checkThatExists() {
         try (Connection connection = DriverManager.getConnection(
             POSTGRES.getJdbcUrl(),

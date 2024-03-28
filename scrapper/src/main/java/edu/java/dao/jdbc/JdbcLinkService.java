@@ -4,11 +4,12 @@ import edu.java.dao.LinkService;
 import edu.java.dao.dto.Link;
 import java.net.URI;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 public class JdbcLinkService implements LinkService {
 
@@ -19,7 +20,6 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    @Transactional
     public void add(long tgChatId, URI url) {
         String sql = String.format("""
             WITH inserted_link AS (
@@ -38,7 +38,6 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    @Transactional
     public void remove(long tgChatId, URI url) {
         String sql = String.format("""
             DELETE FROM task WHERE chat_id = %d
@@ -48,7 +47,6 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    @Transactional
     public List<Link> listAll(long tgChatId) {
         String sql = String.format("""
             SELECT l.url FROM task t
@@ -62,13 +60,15 @@ public class JdbcLinkService implements LinkService {
                         URI.create(resultSet.getString("url"))
                     );
                 } catch (final IllegalArgumentException e) {
+                    log.debug("Unable to create URI");
                     // should never happen, because database contains
                     // only valid uri's
+
                     return null;
                 }
             });
         } catch (DataAccessException e) {
-            System.err.println(e.getMessage());
+            log.debug(e.getMessage());
         }
         return null;
     }

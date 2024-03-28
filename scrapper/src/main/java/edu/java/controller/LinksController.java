@@ -27,17 +27,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 public class LinksController {
 
-    private final LinkService service;
+    private final LinkService linkService;
 
     public LinksController(LinkService service) {
-        this.service = service;
+        this.linkService = service;
     }
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     public ResponseEntity<ListLinksResponse> getLinks(@RequestHeader("Tg-Chat-Id") long id) {
-        List<LinkResponse> list = service.listAll(id)
+        List<LinkResponse> list = linkService.listAll(id)
             .stream()
             .map(link -> new LinkResponse(id, link.url()))
             .toList();
@@ -52,7 +52,7 @@ public class LinksController {
         @RequestHeader("Tg-Chat-Id") long id,
         @RequestBody AddLinkRequest request
     ) {
-        service.add(id, request.link());
+        linkService.add(id, request.link());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -68,7 +68,7 @@ public class LinksController {
         @RequestHeader("Tg-Chat-Id") long id,
         @RequestBody RemoveLinkRequest request
     ) {
-        service.remove(id, request.link());
+        linkService.remove(id, request.link());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
