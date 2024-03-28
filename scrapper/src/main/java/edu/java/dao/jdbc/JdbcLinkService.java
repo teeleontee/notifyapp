@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
@@ -68,6 +69,30 @@ public class JdbcLinkService implements LinkService {
                 }
             });
         } catch (DataAccessException e) {
+            log.debug(e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public List<Long> listAllTgChatsWithLink(URI url) {
+        try {
+            String sql1 = String.format("""
+            SELECT * FROM link WHERE url = '%s'
+            """, url.toString());
+            Long id = jdbcTemplate.query(sql1, (resultSet) -> {
+                resultSet.next();
+                return resultSet.getLong("id");
+            });
+
+            String sql2 = String.format("""
+                SELECT * FROM task WHERE link_id = %d
+                """, id);
+            return jdbcTemplate.query(sql2, (resultSet, i) -> {
+                return resultSet.getLong("chat_id");
+            });
+        } catch (final DataAccessException e) {
             log.debug(e.getMessage());
         }
         return null;

@@ -10,4 +10,6 @@ public interface LinkService {
     void remove(long tgChatId, URI url);
 
     List<Link> listAll(long tgChatId);
+
+    List<Long> listAllTgChatsWithLink(URI url);
 }

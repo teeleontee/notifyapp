@@ -12,10 +12,24 @@ public record GithubDetailsResponse(
     @JsonProperty("id")
     int id
 
-    ) {
+) {
+    @Override
+    public String toString() {
+        return "GithubDetailsResponse{"
+            + "owner=" + owner
+            + ", name=" + name
+            + ", id=" + id
+            + '}';
+    }
+
     public record Owner(
         @JsonProperty("login")
         String login
     ) {
+        @Override public String toString() {
+            return "Owner{"
+                + "login=" + login
+                + '}';
+        }
     }
 }
