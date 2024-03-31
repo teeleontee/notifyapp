@@ -30,7 +30,7 @@ public class JpaLinkUpdater implements LinkUpdater {
 
     @Override
     public List<LinkContent> findAll(int time) {
-        var date = Date.from(Instant.now().minusSeconds(MINUTE * time));
+        var date = Date.from(Instant.now().minusSeconds(minute * time));
         return linkRepository.findAllByCheckedTimeBefore(date)
             .stream()
             .map(it -> new LinkContent(URI.create(it.getUrl()), it.getContent()))
