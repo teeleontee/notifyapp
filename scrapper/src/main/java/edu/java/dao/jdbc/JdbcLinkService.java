@@ -7,11 +7,9 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Component
 public class JdbcLinkService implements LinkService {
 
     private final JdbcTemplate jdbcTemplate;
@@ -64,7 +62,6 @@ public class JdbcLinkService implements LinkService {
                     log.debug("Unable to create URI");
                     // should never happen, because database contains
                     // only valid uri's
-
                     return null;
                 }
             });
@@ -79,8 +76,8 @@ public class JdbcLinkService implements LinkService {
     public List<Long> listAllTgChatsWithLink(URI url) {
         try {
             String sql1 = String.format("""
-            SELECT * FROM link WHERE url = '%s'
-            """, url.toString());
+                SELECT * FROM link WHERE url = '%s'
+                """, url.toString());
             Long id = jdbcTemplate.query(sql1, (resultSet) -> {
                 resultSet.next();
                 return resultSet.getLong("id");

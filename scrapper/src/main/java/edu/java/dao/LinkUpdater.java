@@ -12,5 +12,5 @@ public interface LinkUpdater {
      * @return Links that need to be updated, i.e. where checked time is bigger
      * than {@code time}
      */
-    List<LinkContent> findAll(String time);
+    List<LinkContent> findAll(int time);
 }
