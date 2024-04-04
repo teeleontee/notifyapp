@@ -3,24 +3,18 @@ package edu.java.scrapper.service;
 import edu.java.dao.LinkService;
 import edu.java.dao.TgChatService;
 import edu.java.dao.dto.Link;
-import edu.java.dao.jdbc.JdbcLinkService;
-import edu.java.dao.jdbc.JdbcTgChatService;
 import edu.java.scrapper.IntegrationTest;
+import java.net.URI;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import java.net.URI;
-import java.util.List;
 
-public class ServiceTest extends IntegrationTest {
+public abstract class ServiceTest extends IntegrationTest {
 
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-    private final LinkService linkService = new JdbcLinkService(jdbcTemplate);
-
-    private final TgChatService tgChatService = new JdbcTgChatService(jdbcTemplate);
+    protected final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
     @BeforeAll
     public static void setup() {
@@ -31,8 +25,13 @@ public class ServiceTest extends IntegrationTest {
         );
     }
 
+    protected abstract TgChatService getTgChatService();
+
+    protected abstract LinkService getLinkService();
+
     @Test
     public void chatRegisterAndUnregisterTest() {
+        var tgChatService = getTgChatService();
         long tgchatId = 111L;
         tgChatService.register(tgchatId);
         String sql = """
@@ -52,6 +51,8 @@ public class ServiceTest extends IntegrationTest {
 
     @Test
     public void addAndRemoveLinkTest() {
+        var tgChatService = getTgChatService();
+        var linkService = getLinkService();
         long chatId = 111L;
         tgChatService.register(chatId);
         URI githubUri = URI.create("https://github.com/");
@@ -77,13 +78,15 @@ public class ServiceTest extends IntegrationTest {
 
         linkService.remove(chatId, githubUri);
         List<String> result = jdbcTemplate.query(sql2, (resultSet, i) -> {
-           return resultSet.getString("url");
+            return resultSet.getString("url");
         });
         Assertions.assertEquals(0, result.size());
     }
 
     @Test
     public void listAllTest() {
+        var tgChatService = getTgChatService();
+        var linkService = getLinkService();
         tgChatService.register(1);
         tgChatService.register(2);
         linkService.add(1, URI.create("https://www.youtube.com"));

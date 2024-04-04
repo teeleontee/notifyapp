@@ -8,7 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Embeddable @Getter @Setter @NoArgsConstructor @Table(name = "task") public class TaskPk implements Serializable {
+@Embeddable
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "task")
+public class TaskPk implements Serializable {
     private Long chatId;
     private Long linkId;
 
@@ -17,7 +22,8 @@ import lombok.Setter;
         this.linkId = linkId;
     }
 
-    @Override public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -28,7 +34,8 @@ import lombok.Setter;
         return Objects.equals(chatId, taskPk.chatId) && Objects.equals(linkId, taskPk.linkId);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(chatId, linkId);
     }
 }

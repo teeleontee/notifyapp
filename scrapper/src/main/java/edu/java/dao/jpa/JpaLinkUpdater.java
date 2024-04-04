@@ -24,8 +24,10 @@ public class JpaLinkUpdater implements LinkUpdater {
     @Override
     public void update(String link, String content) {
         Optional<Link> url = linkRepository.findByUrl(link);
-        url.ifPresent(it -> it.setContent(content));
-        url.ifPresent(linkRepository::save);
+        url.ifPresent(it -> {
+            it.setContent(content);
+            linkRepository.save(it);
+        });
     }
 
     @Override

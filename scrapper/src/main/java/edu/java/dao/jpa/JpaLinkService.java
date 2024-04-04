@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaLinkService implements LinkService {
 
     private final LinkRepository linkRepository;
-
     private final TaskRepository taskRepository;
 
-    public JpaLinkService(LinkRepository linkRepository, TaskRepository taskRepository) {
+    public JpaLinkService(
+        LinkRepository linkRepository,
+        TaskRepository taskRepository
+    ) {
         this.linkRepository = linkRepository;
         this.taskRepository = taskRepository;
     }
@@ -31,8 +33,8 @@ public class JpaLinkService implements LinkService {
         link.setUrl(url.toString());
         linkRepository.save(link);
         var task = new Task();
-        task.setLinkId(link.getId());
         task.setChatId(tgChatId);
+        task.setLinkId(link.getId());
         taskRepository.save(task);
     }
 
@@ -48,7 +50,9 @@ public class JpaLinkService implements LinkService {
     public List<edu.java.dao.dto.Link> listAll(long tgChatId) {
         return taskRepository.findAllByChatId(tgChatId)
             .stream()
-            .map(it -> linkRepository.findById(it.getLinkId()).get())
+            .map(it -> linkRepository.findById(it.getLink().getId()))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .map(it -> new edu.java.dao.dto.Link(URI.create(it.getUrl())))
             .toList();
     }
@@ -59,7 +63,7 @@ public class JpaLinkService implements LinkService {
         Long id = linkRepository.findByUrl(url.toString()).get().getId();
         return taskRepository.findAllByLinkId(id)
             .stream()
-            .map(Task::getChatId)
+            .map(it -> it.getChat().getId())
             .toList();
     }
 }
