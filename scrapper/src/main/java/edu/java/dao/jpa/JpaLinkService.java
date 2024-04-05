@@ -40,9 +40,16 @@ public class JpaLinkService implements LinkService {
 
     @Override
     public void remove(long tgChatId, URI url) {
-        Long linkId = linkRepository.findByUrl(url.toString()).get().getId();
-        Optional<Task> task = taskRepository.findAllByChatIdAndLinkId(tgChatId, linkId);
-        task.ifPresent(taskRepository::delete);
+        var link = linkRepository.findByUrl(url.toString());
+        if (link.isPresent()) {
+            Long linkId = link.get().getId();
+            var task = taskRepository.findAllByChatIdAndLinkId(tgChatId, linkId);
+            task.ifPresent(taskRepository::delete);
+            List<Task> tasksWithLink = taskRepository.findAllByLinkId(linkId);
+            if (tasksWithLink.isEmpty()) {
+                linkRepository.deleteById(linkId);
+            }
+        }
     }
 
     @Override
