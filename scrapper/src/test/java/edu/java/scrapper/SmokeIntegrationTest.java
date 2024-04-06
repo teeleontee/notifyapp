@@ -5,11 +5,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers public class SmokeIntegrationTest extends IntegrationTest {
+@Testcontainers
+@Slf4j
+public class SmokeIntegrationTest extends IntegrationTest {
     @Test public void checkThatExists() {
         try (Connection connection = DriverManager.getConnection(
             POSTGRES.getJdbcUrl(),
@@ -20,10 +23,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
             ResultSet res = stmt.executeQuery("SELECT COUNT(*) FROM pg_tables WHERE tablename = 'tgchat'");
             res.next();
             Assertions.assertEquals(1, res.getInt(1));
-        } catch (SQLException e) {
-            System.err.println("SqlException: " + e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
             Assertions.fail();
-        } catch (Exception ignored) {
         }
     }
 }

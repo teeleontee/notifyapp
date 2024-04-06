@@ -6,6 +6,7 @@ import edu.java.clients.GithubClientImpl;
 import edu.java.clients.StackOverflowClient;
 import edu.java.clients.StackOverflowClientImpl;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,7 +14,9 @@ import reactor.core.scheduler.Schedulers;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.Assert.assertThrows;
 
+@Slf4j
 public class ClientsTest {
     private final static int PORT_STACKOVERFLOW = 7777;
     private final static int PORT_GITHUB = 9999;
@@ -48,17 +51,14 @@ public class ClientsTest {
             })
             .doOnError(error -> Assertions.fail())
             .block();
+
         // bad url, should fail
-        try {
+        assertThrows(Exception.class, () ->
             stackOverflowClient.getQuestionInfo("badUrl")
-                .subscribeOn(Schedulers.boundedElastic())
-                .timeout(Duration.ofSeconds(2))
-                .doOnSuccess(result -> Assertions.fail())
-                .doOnError(e -> {
-                })
-                .block();
-        } catch (final Exception ignored) {
-        }
+            .subscribeOn(Schedulers.boundedElastic())
+            .timeout(Duration.ofSeconds(2))
+            .doOnSuccess(result -> Assertions.fail())
+            .block());
     }
 
     @Test
@@ -85,16 +85,13 @@ public class ClientsTest {
             .doOnError(error -> Assertions.fail())
             .block();
         // bad url, should fail
-        try {
-            client.getGithubInfo("badUrl", "AnotherBadUrl")
-                .subscribeOn(Schedulers.boundedElastic())
-                .timeout(Duration.ofSeconds(1))
-                .doOnSuccess(result -> Assertions.fail())
-                .doOnError(e -> {
-                })
-                .block();
-        } catch (final Exception ignored) {
-        }
+        assertThrows(Exception.class, () -> client.getGithubInfo("badUrl", "AnotherBadUrl")
+            .subscribeOn(Schedulers.boundedElastic())
+            .timeout(Duration.ofSeconds(1))
+            .doOnSuccess(result -> Assertions.fail())
+            .doOnError(it -> {})
+            .doOnError(e -> {
+            })
+            .block());
     }
-
 }
