@@ -4,12 +4,14 @@ import edu.java.controller.dto.request.AddLinkRequest;
 import edu.java.controller.dto.request.RemoveLinkRequest;
 import edu.java.controller.dto.response.LinkResponse;
 import edu.java.controller.dto.response.ListLinksResponse;
+import edu.java.dao.LinkService;
 import edu.java.exceptions.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +27,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 public class LinksController {
 
+    private final LinkService linkService;
+
+    public LinksController(LinkService service) {
+        this.linkService = service;
+    }
+
     @Operation(summary = "Получить все отслеживаемые ссылки")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     public ResponseEntity<ListLinksResponse> getLinks(@RequestHeader("Tg-Chat-Id") long id) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        List<LinkResponse> list = linkService.listAll(id)
+            .stream()
+            .map(link -> new LinkResponse(id, link.url()))
+            .toList();
+        ListLinksResponse response = new ListLinksResponse(list.size(), list);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")
@@ -39,6 +52,7 @@ public class LinksController {
         @RequestHeader("Tg-Chat-Id") long id,
         @RequestBody AddLinkRequest request
     ) {
+        linkService.add(id, request.link());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -54,6 +68,7 @@ public class LinksController {
         @RequestHeader("Tg-Chat-Id") long id,
         @RequestBody RemoveLinkRequest request
     ) {
+        linkService.remove(id, request.link());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

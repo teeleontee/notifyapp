@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import javax.sql.DataSource;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -21,13 +22,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class IntegrationTest {
     public static PostgreSQLContainer<?> POSTGRES;
 
+    public static DataSource dataSource;
+
     static {
         POSTGRES = new PostgreSQLContainer<>("postgres:15")
             .withDatabaseName("scrapper")
             .withUsername("postgres")
             .withPassword("postgres");
         POSTGRES.start();
-
         runMigrations(POSTGRES);
     }
 

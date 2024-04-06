@@ -1,18 +1,20 @@
 CREATE TABLE IF NOT EXISTS tgchat
 (
-    id bigint PRIMARY KEY NOT NULL
+    id bigint UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS link
 (
-    id bigint PRIMARY KEY NOT NULL,
+    id SERIAL NOT NULL,
     url text NOT NULL,
-    checked_time TIMESTAMP WITH TIME ZONE NOT NULL
+    content text,
+    checked_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS task
 (
-    chat_id bigint REFERENCES tgchat (id),
-    link_id bigint REFERENCES link (id),
+    chat_id bigint REFERENCES tgchat (id) ON DELETE CASCADE,
+    link_id bigint REFERENCES link (id) ON DELETE CASCADE,
     PRIMARY KEY (chat_id, link_id)
 );

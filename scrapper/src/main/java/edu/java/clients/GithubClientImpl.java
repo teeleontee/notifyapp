@@ -1,6 +1,7 @@
 package edu.java.clients;
 
 import edu.java.clients.details.GithubDetailsResponse;
+import java.net.URI;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,24 @@ public class GithubClientImpl implements GithubClient {
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiException("Github error")))
+                clientResponse -> Mono.error(new ApiException("Github error"))
+            )
             .bodyToMono(GithubDetailsResponse.class);
+    }
+
+    @Override
+    public Mono<GithubDetailsResponse> getGithubInfoByUri(URI url) {
+        return getGithubInfo(
+            githubUsernameFromUri(url),
+            githubRepoFromUri(url)
+        );
+    }
+
+    private String githubUsernameFromUri(URI url) {
+        return url.getPath().split("/")[1];
+    }
+
+    private String githubRepoFromUri(URI url) {
+        return url.getPath().split("/")[2];
     }
 }
