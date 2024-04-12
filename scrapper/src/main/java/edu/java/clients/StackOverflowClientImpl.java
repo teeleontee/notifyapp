@@ -4,6 +4,7 @@ import edu.java.clients.details.StackOverflowDetailsResponse;
 import java.net.URI;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,20 +13,23 @@ import reactor.core.publisher.Mono;
 public class StackOverflowClientImpl implements StackOverflowClient {
     private final WebClient stackoverflowClient;
 
-    public StackOverflowClientImpl(@Qualifier("stackOverflowWebClient") WebClient stackoverflowClient) {
+    private final RetryTemplate retryTemplate;
+
+    public StackOverflowClientImpl(@Qualifier("stackOverflowWebClient") WebClient stackoverflowClient, RetryTemplate retryTemplate) {
         this.stackoverflowClient = stackoverflowClient;
+        this.retryTemplate = retryTemplate;
     }
 
     @Override
     public Mono<StackOverflowDetailsResponse> getQuestionInfo(String id) {
-        return stackoverflowClient.get()
+        return retryTemplate.execute(ctx -> stackoverflowClient.get()
             .uri("/questions/{id}?site=stackoverflow", id)
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
                 clientResponse -> Mono.error(new ApiException("StackOverflow error"))
             )
-            .bodyToMono(StackOverflowDetailsResponse.class);
+            .bodyToMono(StackOverflowDetailsResponse.class));
     }
 
     @Override

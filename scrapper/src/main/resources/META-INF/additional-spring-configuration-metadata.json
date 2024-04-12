@@ -1,8 +1,23 @@
 {
-  "properties": [
-    {
-      "name": "app.connection-type",
-      "type": "java.lang.String",
-      "description": "Description for app.connection-type."
-  }
-] }
+    "properties": [
+        {
+            "name": "app.connection-type",
+            "type": "java.lang.String",
+            "description": "Description for app.connection-type."
+        },
+        {
+            "name": "app.backoff.attempts",
+            "type": "java.lang.String",
+            "description": "Description for app.backoff.attempts."
+        },
+        {
+            "name": "app.retry.policy",
+            "type": "edu.java.clients.retry.RetryPolicy",
+            "description": "Description for app.retry.policy."
+        },
+        {
+            "name": "app.retry.supported-errors",
+            "type": "java.util.List<java.lang.Integer>",
+            "description": "Description for app.retry.supported-errors."
+        }
+    ] }

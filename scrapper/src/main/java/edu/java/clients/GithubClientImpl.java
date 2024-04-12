@@ -2,38 +2,45 @@ package edu.java.clients;
 
 import edu.java.clients.details.GithubDetailsResponse;
 import java.net.URI;
+import java.time.Duration;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Component
 public class GithubClientImpl implements GithubClient {
     private final WebClient githubWebClient;
 
-    public GithubClientImpl(@Qualifier("githubWebClient") WebClient githubWebClient) {
+    private final RetryTemplate retryTemplate;
+
+    public GithubClientImpl(@Qualifier("githubWebClient") WebClient githubWebClient,
+        RetryTemplate retryTemplate) {
         this.githubWebClient = githubWebClient;
+        this.retryTemplate = retryTemplate;
     }
 
     @Override
     public Mono<GithubDetailsResponse> getGithubInfo(String username, String repo) {
-        return githubWebClient.get()
+        return retryTemplate.execute(ctx -> githubWebClient.get()
             .uri("/repos/{username}/{repo}", username, repo)
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
                 clientResponse -> Mono.error(new ApiException("Github error"))
             )
-            .bodyToMono(GithubDetailsResponse.class);
+            .bodyToMono(GithubDetailsResponse.class));
     }
 
     @Override
     public Mono<GithubDetailsResponse> getGithubInfoByUri(URI url) {
-        return getGithubInfo(
+        return retryTemplate.execute(ctx -> getGithubInfo(
             githubUsernameFromUri(url),
             githubRepoFromUri(url)
-        );
+        ));
     }
 
     private String githubUsernameFromUri(URI url) {
