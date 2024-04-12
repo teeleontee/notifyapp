@@ -24,7 +24,11 @@ public record ApplicationConfig(
 
     @NotNull
     @Value("${app.bot-base-url:https://localhost:8090}")
-    String botBaseUrl
+    String botBaseUrl,
+
+    @NotNull
+    @Value("${app.connection-type:jdbc}")
+    AccessType connectionType
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }

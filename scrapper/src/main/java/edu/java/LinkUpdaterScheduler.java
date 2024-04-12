@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class LinkUpdaterScheduler {
 
+    private final int defaultInterval = 10;
+
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
     private final LinkUpdater linkUpdater;
@@ -42,7 +44,7 @@ public class LinkUpdaterScheduler {
     @Scheduled(fixedDelayString = "#{@'app-edu.java.configuration.ApplicationConfig'.scheduler.interval}")
     void update() {
         log.debug("scheduled");
-        List<LinkContent> links = linkUpdater.findAll("1 minute");
+        List<LinkContent> links = linkUpdater.findAll(defaultInterval);
         links.forEach(link -> log.debug(link.url() + " -- needs updating"));
         for (var link : links) {
             String details = null;

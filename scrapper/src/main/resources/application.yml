@@ -6,8 +6,11 @@ app:
   github-base-url: https://api.github.com
   stack-overflow-base-url: https://api.stackexchange.com/2.3
   bot-base-url: https://localhost:8090
+  connection-type: jdbc
 
 spring:
+  liquibase:
+    enabled: false
   application:
     name: scrapper
   datasource:
