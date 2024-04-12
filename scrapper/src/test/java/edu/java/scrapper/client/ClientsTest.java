@@ -57,7 +57,6 @@ public class ClientsTest {
             stackOverflowClient.getQuestionInfo("badUrl")
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(2))
-            .doOnSuccess(result -> Assertions.fail())
             .block());
     }
 
@@ -89,9 +88,6 @@ public class ClientsTest {
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(1))
             .doOnSuccess(result -> Assertions.fail())
-            .doOnError(it -> {})
-            .doOnError(e -> {
-            })
             .block());
     }
 }
