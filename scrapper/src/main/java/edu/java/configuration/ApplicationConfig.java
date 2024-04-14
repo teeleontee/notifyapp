@@ -18,6 +18,9 @@ public record ApplicationConfig(
     Scheduler scheduler,
 
     @NotNull
+    ClientRetry clientRetry,
+
+    @NotNull
     @Value("${app.github-base-url:https://api.github.com}")
     String githubBaseUrl,
 
@@ -31,22 +34,31 @@ public record ApplicationConfig(
 
     @NotNull
     @Value("${app.connection-type:jdbc}")
-    AccessType connectionType,
+    AccessType connectionType
 
-    @NotNull
-    @Value(value = "${app.retry.policy}")
-    RetryPolicy retryPolicy,
-
-    @Value("${app.retry.attempts}")
-    Integer maxAttempts,
-
-    @Value("${app.retry.delay}")
-    Integer delay,
-
-    @Value("${app.retry.supported-errors}")
-    List<Integer> supportedErrors
+//    @NotNull
+//    @Value(value = "${app.retry.policy}")
+//    RetryPolicy retryPolicy,
+//
+//    @Value("${app.retry.attempts}")
+//    Integer maxAttempts,
+//
+//    @Value("${app.retry.delay}")
+//    Integer delay,
+//
+//    @Value("${app.retry.supported-errors}")
+//    List<Integer> supportedErrors
 ) {
-    public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
+    public record Scheduler(boolean enable,
+                            @NotNull Duration interval,
+                            @NotNull Duration forceCheckDelay) {
     }
 
+    public record ClientRetry(
+        @NotNull RetryPolicy retryPolicy,
+        @NotNull Integer maxAttempts,
+        @NotNull Integer delay,
+        @NotNull List<Integer> supportedErrors
+    ) {
+    }
 }

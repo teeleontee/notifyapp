@@ -1,7 +1,6 @@
 package edu.java.configuration;
 
 import edu.java.clients.retry.LinearBackOffPolicy;
-import edu.java.clients.retry.RetryPolicy;
 import edu.java.clients.retry.SupportedExceptionClassifierRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -21,22 +20,23 @@ public class RetryConfiguration {
     @Bean
     public RetryTemplate retryTemplate(ApplicationConfig config) {
         RetryTemplate retryTemplate = new RetryTemplate();
+        var cnf = config.clientRetry();
 
-        log.debug("POLICY IS : " + config.retryPolicy());
-        switch (config.retryPolicy()) {
+        log.debug("POLICY IS : {}", cnf.retryPolicy());
+        switch (cnf.retryPolicy()) {
             case LINEAR -> {
                 LinearBackOffPolicy linearBackOffPolicy = new LinearBackOffPolicy();
-                linearBackOffPolicy.setIncrementer(config.delay());
+                linearBackOffPolicy.setIncrementer(cnf.delay());
                 retryTemplate.setBackOffPolicy(linearBackOffPolicy);
             }
             case CONSTANT -> {
                 FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
-                fixedBackOffPolicy.setBackOffPeriod(config.delay() * 1000L);
+                fixedBackOffPolicy.setBackOffPeriod(cnf.delay() * 1000L);
                 retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
             }
             case EXPONENTIAL -> {
                 ExponentialBackOffPolicy exponentialBackOffPolicy = new ExponentialBackOffPolicy();
-                exponentialBackOffPolicy.setInitialInterval(config.delay());
+                exponentialBackOffPolicy.setInitialInterval(cnf.delay());
                 retryTemplate.setBackOffPolicy(exponentialBackOffPolicy);
             }
         }
@@ -44,7 +44,7 @@ public class RetryConfiguration {
         SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy();
 
         SupportedExceptionClassifierRetryPolicy retryPolicy
-            = new SupportedExceptionClassifierRetryPolicy(List.of(1, 2, 3), config.maxAttempts());
+            = new SupportedExceptionClassifierRetryPolicy(List.of(1, 2, 3), cnf.maxAttempts());
         retryTemplate.setRetryPolicy(retryPolicy);
 
         return retryTemplate;

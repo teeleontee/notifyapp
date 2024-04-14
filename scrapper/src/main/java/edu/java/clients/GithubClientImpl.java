@@ -3,6 +3,7 @@ package edu.java.clients;
 import edu.java.clients.details.GithubDetailsResponse;
 import java.net.URI;
 import java.time.Duration;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.retry.support.RetryTemplate;
@@ -12,16 +13,11 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 @Component
+@RequiredArgsConstructor
 public class GithubClientImpl implements GithubClient {
     private final WebClient githubWebClient;
 
     private final RetryTemplate retryTemplate;
-
-    public GithubClientImpl(@Qualifier("githubWebClient") WebClient githubWebClient,
-        RetryTemplate retryTemplate) {
-        this.githubWebClient = githubWebClient;
-        this.retryTemplate = retryTemplate;
-    }
 
     @Override
     public Mono<GithubDetailsResponse> getGithubInfo(String username, String repo) {

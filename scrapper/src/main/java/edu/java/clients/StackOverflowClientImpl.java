@@ -2,6 +2,7 @@ package edu.java.clients;
 
 import edu.java.clients.details.StackOverflowDetailsResponse;
 import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.ApiException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.retry.support.RetryTemplate;
@@ -10,19 +11,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class StackOverflowClientImpl implements StackOverflowClient {
-    private final WebClient stackoverflowClient;
+    private final WebClient stackOverflowWebClient;
 
     private final RetryTemplate retryTemplate;
 
-    public StackOverflowClientImpl(@Qualifier("stackOverflowWebClient") WebClient stackoverflowClient, RetryTemplate retryTemplate) {
-        this.stackoverflowClient = stackoverflowClient;
-        this.retryTemplate = retryTemplate;
-    }
-
     @Override
     public Mono<StackOverflowDetailsResponse> getQuestionInfo(String id) {
-        return retryTemplate.execute(ctx -> stackoverflowClient.get()
+        return retryTemplate.execute(ctx -> stackOverflowWebClient.get()
             .uri("/questions/{id}?site=stackoverflow", id)
             .retrieve()
             .onStatus(

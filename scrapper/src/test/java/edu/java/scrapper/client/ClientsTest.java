@@ -8,6 +8,7 @@ import edu.java.clients.StackOverflowClientImpl;
 import java.time.Duration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.retry.support.RetryTemplate;
@@ -17,12 +18,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-@SpringBootTest
 public class ClientsTest {
     private final static int PORT_STACKOVERFLOW = 7777;
     private final static int PORT_GITHUB = 9999;
 
-   @Autowired RetryTemplate retryTemplate;
+    RetryTemplate retryTemplate = new RetryTemplate();
 
     private final StackOverflowClient stackOverflowClient =
         new StackOverflowClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_STACKOVERFLOW)), retryTemplate);
