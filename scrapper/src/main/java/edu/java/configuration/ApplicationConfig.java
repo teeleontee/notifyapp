@@ -4,7 +4,6 @@ import edu.java.clients.retry.RetryPolicy;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,19 +34,6 @@ public record ApplicationConfig(
     @NotNull
     @Value("${app.connection-type:jdbc}")
     AccessType connectionType
-
-//    @NotNull
-//    @Value(value = "${app.retry.policy}")
-//    RetryPolicy retryPolicy,
-//
-//    @Value("${app.retry.attempts}")
-//    Integer maxAttempts,
-//
-//    @Value("${app.retry.delay}")
-//    Integer delay,
-//
-//    @Value("${app.retry.supported-errors}")
-//    List<Integer> supportedErrors
 ) {
     public record Scheduler(boolean enable,
                             @NotNull Duration interval,

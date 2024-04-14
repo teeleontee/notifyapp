@@ -1,5 +1,6 @@
 package edu.java.clients.retry;
 
+import java.util.function.Supplier;
 import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,7 +12,6 @@ import org.springframework.retry.backoff.SleepingBackOffPolicy;
 import org.springframework.retry.backoff.ThreadWaitSleeper;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import java.util.function.Supplier;
 
 public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffPolicy> {
 
@@ -64,8 +64,8 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
     private Supplier<Double> incrementerSupplier;
 
     /**
-     *  Public setter for the
-     *  strategy.
+     * Public setter for the
+     * strategy.
      */
     @Setter
     private Sleeper sleeper = new ThreadWaitSleeper();
@@ -92,6 +92,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
     /**
      * Set the initial sleep interval value. Default is {@code 100} millisecond. Cannot be
      * set to a value less than one.
+     *
      * @param initialInterval the initial interval
      */
     public void setInitialInterval(long initialInterval) {
@@ -101,6 +102,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
     /**
      * Set the multiplier value. Default is '<code>2.0</code>'. Hint: do not use values
      * much in excess of 1.0 (or the backoff will get very long very fast).
+     *
      * @param incrementer the multiplier
      */
     public void setIncrementer(double incrementer) {
@@ -112,6 +114,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
      * be reset to 1 if this method is called with a value less than 1. Set this to avoid
      * infinite waits if backing off a large number of times (or if the multiplier is set
      * too high).
+     *
      * @param maxInterval in milliseconds.
      */
     public void setMaxInterval(long maxInterval) {
@@ -121,6 +124,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
     /**
      * Set the initial sleep interval value. Default supplier supplies {@code 100}
      * millisecond.
+     *
      * @param initialIntervalSupplier the initial interval
      * @since 2.0
      */
@@ -131,6 +135,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
 
     /**
      * Set the incrementer value.
+     *
      * @param incrementerSupplier the multiplier
      * @since 2.0
      */
@@ -144,6 +149,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
      * be reset to 1 if this method is called with a value less than 1. Set this to avoid
      * infinite waits if backing off a large number of times (or if the multiplier is set
      * too high).
+     *
      * @param maxIntervalSupplier in milliseconds.
      * @since 2.0
      */
@@ -166,6 +172,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
 
     /**
      * The initial period to sleep on the first backoff.
+     *
      * @return the initial interval
      */
     public long getInitialInterval() {
@@ -174,6 +181,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
 
     /**
      * The maximum interval to sleep for. Defaults to 30 seconds.
+     *
      * @return the maximum interval.
      */
     public long getMaxInterval() {
@@ -182,6 +190,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
 
     /**
      * The incrementer to use to generate the next backoff interval from the last.
+     *
      * @return the multiplier in use
      */
     public double getIncrementer() {
@@ -194,7 +203,8 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
     @Override
     public BackOffContext start(RetryContext context) {
         return new LinearBackOffContext(this.initialInterval, this.incrementer, this.maxInterval,
-            this.initialIntervalSupplier, this.incrementerSupplier, this.maxIntervalSupplier);
+            this.initialIntervalSupplier, this.incrementerSupplier, this.maxIntervalSupplier
+        );
     }
 
     /**
@@ -210,11 +220,16 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
                 this.logger.debug("Sleeping for " + sleepTime);
             }
             this.sleeper.sleep(sleepTime);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BackOffInterruptedException("Thread interrupted while sleeping", e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return ClassUtils.getShortName(getClass()) + "[initialInterval=" + getInitialInterval() + ", multiplier="
+            + getIncrementer() + ", maxInterval=" + getMaxInterval() + "]";
     }
 
     static class LinearBackOffContext implements BackOffContext {
@@ -231,9 +246,11 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
 
         private final Supplier<Long> maxIntervalSupplier;
 
-        public LinearBackOffContext(long interval, double incrementer, long maxInterval,
+        LinearBackOffContext(
+            long interval, double incrementer, long maxInterval,
             Supplier<Long> intervalSupplier, Supplier<Double> multiplierSupplier,
-            Supplier<Long> maxIntervalSupplier) {
+            Supplier<Long> maxIntervalSupplier
+        ) {
             this.interval = interval;
             this.incrementer = incrementer;
             this.maxInterval = maxInterval;
@@ -247,8 +264,7 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
             long max = getMaxInterval();
             if (sleep > max) {
                 sleep = max;
-            }
-            else {
+            } else {
                 this.interval = getNextInterval();
             }
             return sleep;
@@ -274,12 +290,6 @@ public class LinearBackOffPolicy implements SleepingBackOffPolicy<LinearBackOffP
             return this.maxIntervalSupplier != null ? this.maxIntervalSupplier.get() : this.maxInterval;
         }
 
-    }
-
-    @Override
-    public String toString() {
-        return ClassUtils.getShortName(getClass()) + "[initialInterval=" + getInitialInterval() + ", multiplier="
-            + getIncrementer() + ", maxInterval=" + getMaxInterval() + "]";
     }
 
 }

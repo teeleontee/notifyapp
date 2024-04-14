@@ -8,14 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
-import java.util.List;
 
 @EnableRetry
 @Configuration
 @Slf4j
 public class RetryConfiguration {
+
+    private final long backoffCount = 1000L;
 
     @Bean
     public RetryTemplate retryTemplate(ApplicationConfig config) {
@@ -31,7 +31,7 @@ public class RetryConfiguration {
             }
             case CONSTANT -> {
                 FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
-                fixedBackOffPolicy.setBackOffPeriod(cnf.delay() * 1000L);
+                fixedBackOffPolicy.setBackOffPeriod(cnf.delay() * backoffCount);
                 retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
             }
             case EXPONENTIAL -> {
@@ -39,12 +39,13 @@ public class RetryConfiguration {
                 exponentialBackOffPolicy.setInitialInterval(cnf.delay());
                 retryTemplate.setBackOffPolicy(exponentialBackOffPolicy);
             }
+            default -> {
+
+            }
         }
 
-        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy();
-
         SupportedExceptionClassifierRetryPolicy retryPolicy
-            = new SupportedExceptionClassifierRetryPolicy(List.of(1, 2, 3), cnf.maxAttempts());
+            = new SupportedExceptionClassifierRetryPolicy(cnf.supportedErrors(), cnf.maxAttempts());
         retryTemplate.setRetryPolicy(retryPolicy);
 
         return retryTemplate;

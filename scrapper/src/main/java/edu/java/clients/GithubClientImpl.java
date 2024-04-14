@@ -2,15 +2,12 @@ package edu.java.clients;
 
 import edu.java.clients.details.GithubDetailsResponse;
 import java.net.URI;
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.ApiException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
 @Component
 @RequiredArgsConstructor
