@@ -9,6 +9,10 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Schedulers;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -20,11 +24,14 @@ import static org.junit.Assert.assertThrows;
 public class ClientsTest {
     private final static int PORT_STACKOVERFLOW = 7777;
     private final static int PORT_GITHUB = 9999;
+
+    RetryTemplate retryTemplate = new RetryTemplate();
+
     private final StackOverflowClient stackOverflowClient =
-        new StackOverflowClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_STACKOVERFLOW)));
+        new StackOverflowClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_STACKOVERFLOW)), retryTemplate);
 
     private final GithubClient client =
-        new GithubClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_GITHUB)));
+        new GithubClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_GITHUB)), retryTemplate);
 
     @Test
     public void testStackOverflow() {

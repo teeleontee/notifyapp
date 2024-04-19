@@ -2,11 +2,15 @@ package edu.java.controller;
 
 import edu.java.dao.TgChatService;
 import edu.java.exceptions.ApiErrorResponse;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.time.Duration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +26,21 @@ public class TelegramChatController {
 
     private final TgChatService tgChatService;
 
+    private final Bucket bucket;
+
+    private final int limitCapacity = 20;
+
+    private final int refillTokens = 20;
+
     public TelegramChatController(TgChatService service) {
         this.tgChatService = service;
+        Bandwidth limit = Bandwidth.classic(
+            limitCapacity,
+            Refill.greedy(refillTokens, Duration.ofMinutes(2))
+        );
+        bucket = Bucket.builder()
+            .addLimit(limit)
+            .build();
     }
 
     @Operation(summary = "Зарегистрировать чат")
@@ -34,8 +51,11 @@ public class TelegramChatController {
     })
     @PostMapping("/{id}")
     public ResponseEntity<?> registerChat(@PathVariable long id) {
-        tgChatService.register(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (bucket.tryConsume(1)) {
+            tgChatService.register(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @Operation(summary = "Удалить чат")
@@ -50,7 +70,10 @@ public class TelegramChatController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChat(@PathVariable long id) {
-        tgChatService.unregister(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (bucket.tryConsume(1)) {
+            tgChatService.unregister(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
 }

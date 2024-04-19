@@ -1,8 +1,9 @@
 package edu.java.configuration;
 
+import edu.java.clients.retry.RetryPolicy;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
-import org.springframework.beans.factory.annotation.Value;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.validation.annotation.Validated;
@@ -15,18 +16,30 @@ public record ApplicationConfig(
     Scheduler scheduler,
 
     @NotNull
-    @Value("${app.github-base-url:https://api.github.com}")
+    ClientRetry clientRetry,
+
+    @NotNull
     String githubBaseUrl,
 
     @NotNull
-    @Value("${app.stack-overflow-base-url:https://api.stackexchange.com/2.3}")
     String stackOverflowBaseUrl,
 
     @NotNull
-    @Value("${app.bot-base-url:https://localhost:8090}")
-    String botBaseUrl
+    String botBaseUrl,
+
+    @NotNull
+    AccessType connectionType
 ) {
-    public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
+    public record Scheduler(boolean enable,
+                            @NotNull Duration interval,
+                            @NotNull Duration forceCheckDelay) {
     }
 
+    public record ClientRetry(
+        @NotNull RetryPolicy retryPolicy,
+        @NotNull Integer maxAttempts,
+        @NotNull Integer delay,
+        @NotNull List<Integer> supportedErrors
+    ) {
+    }
 }

@@ -6,11 +6,15 @@ import edu.java.controller.dto.response.LinkResponse;
 import edu.java.controller.dto.response.ListLinksResponse;
 import edu.java.dao.LinkService;
 import edu.java.exceptions.ApiErrorResponse;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.time.Duration;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,20 +33,33 @@ public class LinksController {
 
     private final LinkService linkService;
 
+    private final Bucket bucket;
+
+    private final int bandwidthCapacity = 20;
+
+    private final int tokensCapacity = 20;
+
     public LinksController(LinkService service) {
         this.linkService = service;
+        Bandwidth limit = Bandwidth.classic(bandwidthCapacity, Refill.greedy(tokensCapacity, Duration.ofMinutes(2)));
+        bucket = Bucket.builder()
+            .addLimit(limit)
+            .build();
     }
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     public ResponseEntity<ListLinksResponse> getLinks(@RequestHeader("Tg-Chat-Id") long id) {
-        List<LinkResponse> list = linkService.listAll(id)
-            .stream()
-            .map(link -> new LinkResponse(id, link.url()))
-            .toList();
-        ListLinksResponse response = new ListLinksResponse(list.size(), list);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        if (bucket.tryConsume(1)) {
+            List<LinkResponse> list = linkService.listAll(id)
+                .stream()
+                .map(link -> new LinkResponse(id, link.url()))
+                .toList();
+            ListLinksResponse response = new ListLinksResponse(list.size(), list);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")
@@ -52,8 +69,11 @@ public class LinksController {
         @RequestHeader("Tg-Chat-Id") long id,
         @RequestBody AddLinkRequest request
     ) {
-        linkService.add(id, request.link());
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (bucket.tryConsume(1)) {
+            linkService.add(id, request.link());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
@@ -68,7 +88,10 @@ public class LinksController {
         @RequestHeader("Tg-Chat-Id") long id,
         @RequestBody RemoveLinkRequest request
     ) {
-        linkService.remove(id, request.link());
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (bucket.tryConsume(1)) {
+            linkService.remove(id, request.link());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
 }
