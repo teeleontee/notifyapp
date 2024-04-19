@@ -7,11 +7,11 @@ app:
   stack-overflow-base-url: https://api.stackexchange.com/2.3
   bot-base-url: https://localhost:8090
   connection-type: jdbc
-  clientretry:
-    retrypolicy: linear
+  client-retry:
+    retry-policy: linear
     delay: 2
-    maxattempts: 3
-    supported-errors: 404, 403, 400
+    max-attempts: 3
+    supported-errors: [404, 403, 400]
 
 
 spring:

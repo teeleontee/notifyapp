@@ -1,7 +1,7 @@
-package edu.java.configuration;
+package edu.java.bot.configuration;
 
-import edu.java.clients.retry.LinearBackOffPolicy;
-import edu.java.clients.retry.SupportedExceptionClassifierRetryPolicy;
+import edu.java.bot.client.retry.LinearBackOffPolicy;
+import edu.java.bot.client.retry.SupportedExceptionClassifierRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
