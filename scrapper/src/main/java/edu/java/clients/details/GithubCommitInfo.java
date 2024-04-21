@@ -9,6 +9,13 @@ public record GithubCommitInfo(
     @JsonProperty("commit")
     Commit commit
 ) {
+    @Override public String toString() {
+        return "GithubCommitInfo{"
+            + "sha='" + sha + '\''
+            + ", commit=" + commit
+            + '}';
+    }
+
     public record Commit(
         @JsonProperty("author")
         Author author,
@@ -16,6 +23,14 @@ public record GithubCommitInfo(
         @JsonProperty("message")
         String message
     ) {
+        @Override
+        public String toString() {
+            return "Commit{"
+                + "author='" + author + '\''
+                + ", message='" + message + '\''
+                + '}';
+        }
+
         public record Author(
             @JsonProperty("name")
             String name,
@@ -23,25 +38,12 @@ public record GithubCommitInfo(
             String date) {
             @Override
             public String toString() {
-                return "Author{" +
-                    "name='" + name + '\'' +
-                    ", date='" + date + '\'' +
-                    '}';
+                return "Author{"
+                    + "name='" + name + '\''
+                    + ", date='" + date + '\''
+                    + '}';
             }
         }
 
-        @Override public String toString() {
-            return "Commit{" +
-                "author='" + author + '\'' +
-                ", message='" + message + '\'' +
-                '}';
-        }
-    }
-
-    @Override public String toString() {
-        return "GithubCommitInfo{" +
-            "sha='" + sha + '\'' +
-            ", commit=" + commit +
-            '}';
     }
 }

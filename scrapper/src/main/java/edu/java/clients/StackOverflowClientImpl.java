@@ -17,6 +17,8 @@ public class StackOverflowClientImpl implements StackOverflowClient {
 
     private final RetryTemplate retryTemplate;
 
+    private static final String SO_ERR = "stackoverflow error";
+
     @Override
     public Mono<StackOverflowDetailsResponse> getQuestionInfo(String id) {
         return retryTemplate.execute(ctx -> stackOverflowWebClient.get()
@@ -24,7 +26,7 @@ public class StackOverflowClientImpl implements StackOverflowClient {
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiException("StackOverflow error")))
+                clientResponse -> Mono.error(new ApiException(SO_ERR)))
             .bodyToMono(StackOverflowDetailsResponse.class));
     }
 
@@ -42,7 +44,7 @@ public class StackOverflowClientImpl implements StackOverflowClient {
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiException("StackOverflow error")))
+                clientResponse -> Mono.error(new ApiException(SO_ERR)))
             .bodyToMono(StackOverflowAnswersResponse.class));
     }
 

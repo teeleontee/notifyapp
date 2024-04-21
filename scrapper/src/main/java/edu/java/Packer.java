@@ -3,7 +3,9 @@ package edu.java;
 import com.google.gson.Gson;
 import edu.java.clients.details.GithubCommitInfo;
 import edu.java.clients.details.StackOverflowAnswersResponse;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Packer {
 
     static Gson gson = new Gson();

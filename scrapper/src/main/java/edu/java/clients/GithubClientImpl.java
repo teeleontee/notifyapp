@@ -17,6 +17,8 @@ public class GithubClientImpl implements GithubClient {
 
     private final RetryTemplate retryTemplate;
 
+    private static final String GH_ERR = "Github error";
+
     @Override
     public Mono<GithubDetailsResponse> getGithubRepoInfo(String username, String repo) {
         return retryTemplate.execute(ctx -> githubWebClient.get()
@@ -24,7 +26,7 @@ public class GithubClientImpl implements GithubClient {
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiException("Github error"))
+                clientResponse -> Mono.error(new ApiException(GH_ERR))
             )
             .bodyToMono(GithubDetailsResponse.class));
     }
@@ -44,7 +46,7 @@ public class GithubClientImpl implements GithubClient {
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiException("Github error"))
+                clientResponse -> Mono.error(new ApiException(GH_ERR))
             )
             .bodyToMono(GithubCommitInfo[].class));
     }

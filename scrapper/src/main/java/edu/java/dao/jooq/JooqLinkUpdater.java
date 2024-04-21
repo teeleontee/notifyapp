@@ -9,6 +9,8 @@ import org.jooq.impl.DSL;
 
 public class JooqLinkUpdater implements LinkUpdater {
 
+    private static final Integer SECONDS = 60;
+
     private final DSLContext dsl;
 
     private final Link link = Link.LINK;
@@ -31,7 +33,7 @@ public class JooqLinkUpdater implements LinkUpdater {
         return dsl.select()
             .from(link)
             .where(
-                link.CHECKED_TIME.lt(DSL.currentOffsetDateTime().subtract(DSL.inline(time).mul(60)))
+                link.CHECKED_TIME.lt(DSL.currentOffsetDateTime().subtract(DSL.inline(time).mul(SECONDS)))
             )
             .fetchInto(LinkContent.class);
     }
