@@ -8,9 +8,6 @@ import edu.java.clients.StackOverflowClientImpl;
 import java.time.Duration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Schedulers;
@@ -34,7 +31,7 @@ public class ClientsTest {
     public void testStackOverflow() {
         WireMockServer stackOverflowServer = new WireMockServer(PORT_STACKOVERFLOW);
         stackOverflowServer.start();
-        stackOverflowServer.stubFor(get(urlEqualTo("/questions/11828270?site=stackoverflow"))
+        stackOverflowServer.stubFor(get(urlEqualTo("/questions/11828270?site=stackoverflow&filter=withbody"))
             .willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
                 .withBody(
@@ -79,7 +76,7 @@ public class ClientsTest {
                     "{ \"name\" : \"notifyapp\", \"id\" : 758693428, \"owner\" : { \"login\" : \"teeleontee\" } }")
                 .withStatus(200)));
         // should pass
-        client.getGithubInfo("teeleontee", "notifyapp")
+        client.getGithubRepoInfo("teeleontee", "notifyapp")
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(1))
             .doOnSuccess(result -> {
@@ -93,7 +90,7 @@ public class ClientsTest {
             .block();
         // bad url, should fail
         try {
-            client.getGithubInfo("badUrl", "AnotherBadUrl")
+            client.getGithubRepoInfo("badUrl", "AnotherBadUrl")
                 .subscribeOn(Schedulers.boundedElastic())
                 .timeout(Duration.ofSeconds(1))
                 .doOnSuccess(result -> Assertions.fail())

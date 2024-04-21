@@ -1,5 +1,6 @@
 package edu.java.clients;
 
+import edu.java.clients.details.GithubCommitInfo;
 import edu.java.clients.details.GithubDetailsResponse;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class GithubClientImpl implements GithubClient {
     private final RetryTemplate retryTemplate;
 
     @Override
-    public Mono<GithubDetailsResponse> getGithubInfo(String username, String repo) {
+    public Mono<GithubDetailsResponse> getGithubRepoInfo(String username, String repo) {
         return retryTemplate.execute(ctx -> githubWebClient.get()
             .uri("/repos/{username}/{repo}", username, repo)
             .retrieve()
@@ -30,10 +31,30 @@ public class GithubClientImpl implements GithubClient {
 
     @Override
     public Mono<GithubDetailsResponse> getGithubInfoByUri(URI url) {
-        return retryTemplate.execute(ctx -> getGithubInfo(
+        return getGithubRepoInfo(
             githubUsernameFromUri(url),
             githubRepoFromUri(url)
-        ));
+        );
+    }
+
+    @Override
+    public Mono<GithubCommitInfo[]> getGithubRepoCommitInfo(String username, String repo) {
+        return retryTemplate.execute(ctx -> githubWebClient.get()
+            .uri("/repos/{username}/{repo}/commits", username, repo)
+            .retrieve()
+            .onStatus(
+                httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
+                clientResponse -> Mono.error(new ApiException("Github error"))
+            )
+            .bodyToMono(GithubCommitInfo[].class));
+    }
+
+    @Override
+    public Mono<GithubCommitInfo[]> getGithubRepoCommitInfoByUri(URI url) {
+        return getGithubRepoCommitInfo(
+            githubUsernameFromUri(url),
+            githubRepoFromUri(url)
+        );
     }
 
     private String githubUsernameFromUri(URI url) {

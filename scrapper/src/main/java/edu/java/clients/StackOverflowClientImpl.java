@@ -1,5 +1,6 @@
 package edu.java.clients;
 
+import edu.java.clients.details.StackOverflowAnswersResponse;
 import edu.java.clients.details.StackOverflowDetailsResponse;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +20,37 @@ public class StackOverflowClientImpl implements StackOverflowClient {
     @Override
     public Mono<StackOverflowDetailsResponse> getQuestionInfo(String id) {
         return retryTemplate.execute(ctx -> stackOverflowWebClient.get()
-            .uri("/questions/{id}?site=stackoverflow", id)
+            .uri("/questions/{id}?site=stackoverflow&filter=withbody", id)
             .retrieve()
             .onStatus(
                 httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiException("StackOverflow error"))
-            )
+                clientResponse -> Mono.error(new ApiException("StackOverflow error")))
             .bodyToMono(StackOverflowDetailsResponse.class));
     }
 
     @Override
     public Mono<StackOverflowDetailsResponse> getQuestionInfoByUri(URI url) {
-        return getQuestionInfo(stackOverflowQuestionIdFromUri(url));
+        return getQuestionInfo(
+            stackOverflowQuestionIdFromUri(url)
+        );
+    }
+
+    @Override
+    public Mono<StackOverflowAnswersResponse> getQuestionAnswers(String id) {
+        return retryTemplate.execute(ctx -> stackOverflowWebClient.get()
+            .uri("/questions/{id}/answers?site=stackoverflow&filter=withbody", id)
+            .retrieve()
+            .onStatus(
+                httpStatusCode -> httpStatusCode.is4xxClientError() || httpStatusCode.is5xxServerError(),
+                clientResponse -> Mono.error(new ApiException("StackOverflow error")))
+            .bodyToMono(StackOverflowAnswersResponse.class));
+    }
+
+    @Override
+    public Mono<StackOverflowAnswersResponse> getQuestionAnswersByUri(URI url) {
+        return getQuestionAnswers(
+            stackOverflowQuestionIdFromUri(url)
+        );
     }
 
     private String stackOverflowQuestionIdFromUri(URI url) {
