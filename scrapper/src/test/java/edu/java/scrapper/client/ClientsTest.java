@@ -88,7 +88,7 @@ public class ClientsTest {
             .doOnError(error -> Assertions.fail())
             .block();
         // bad url, should fail
-        assertThrows(Exception.class, () -> client.getGithubInfo("badUrl", "AnotherBadUrl")
+        assertThrows(Exception.class, () -> client.getGithubRepoInfo("badUrl", "AnotherBadUrl")
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(1))
             .doOnSuccess(result -> Assertions.fail())
