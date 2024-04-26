@@ -2,9 +2,7 @@ package edu.java.dao.jdbc;
 
 import edu.java.dao.TgChatService;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 
-@Component
 public class JdbcTgChatService implements TgChatService {
 
     private final JdbcTemplate jdbcTemplate;

@@ -10,7 +10,6 @@ import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.dao.DataAccess;
 import edu.java.bot.handler.UserMessageProcessor;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,11 +21,11 @@ public class NotifyBot implements Bot {
     private final DataAccess dataAccess;
 
     public NotifyBot(
-        @Qualifier("applicationConfig") ApplicationConfig config,
+        ApplicationConfig config,
         UserMessageProcessor handler,
         DataAccess dataAccess
     ) {
-        bot = new TelegramBot(config.getTelegramToken());
+        bot = new TelegramBot(config.telegramToken());
         this.handler = handler;
         this.dataAccess = dataAccess;
         setup();

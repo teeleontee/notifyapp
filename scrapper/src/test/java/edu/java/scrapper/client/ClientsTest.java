@@ -9,6 +9,7 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Schedulers;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -20,17 +21,20 @@ import static org.junit.Assert.assertThrows;
 public class ClientsTest {
     private final static int PORT_STACKOVERFLOW = 7777;
     private final static int PORT_GITHUB = 9999;
+
+    RetryTemplate retryTemplate = new RetryTemplate();
+
     private final StackOverflowClient stackOverflowClient =
-        new StackOverflowClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_STACKOVERFLOW)));
+        new StackOverflowClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_STACKOVERFLOW)), retryTemplate);
 
     private final GithubClient client =
-        new GithubClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_GITHUB)));
+        new GithubClientImpl(WebClient.create(String.format("http://localhost:%s", PORT_GITHUB)), retryTemplate);
 
     @Test
     public void testStackOverflow() {
         WireMockServer stackOverflowServer = new WireMockServer(PORT_STACKOVERFLOW);
         stackOverflowServer.start();
-        stackOverflowServer.stubFor(get(urlEqualTo("/questions/11828270?site=stackoverflow"))
+        stackOverflowServer.stubFor(get(urlEqualTo("/questions/11828270?site=stackoverflow&filter=withbody"))
             .willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
                 .withBody(
@@ -71,7 +75,7 @@ public class ClientsTest {
                     "{ \"name\" : \"notifyapp\", \"id\" : 758693428, \"owner\" : { \"login\" : \"teeleontee\" } }")
                 .withStatus(200)));
         // should pass
-        client.getGithubInfo("teeleontee", "notifyapp")
+        client.getGithubRepoInfo("teeleontee", "notifyapp")
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(1))
             .doOnSuccess(result -> {
@@ -84,7 +88,7 @@ public class ClientsTest {
             .doOnError(error -> Assertions.fail())
             .block();
         // bad url, should fail
-        assertThrows(Exception.class, () -> client.getGithubInfo("badUrl", "AnotherBadUrl")
+        assertThrows(Exception.class, () -> client.getGithubRepoInfo("badUrl", "AnotherBadUrl")
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(1))
             .doOnSuccess(result -> Assertions.fail())
