@@ -40,7 +40,8 @@ public class LinkUpdaterScheduler {
         List<LinkContent> links = linkUpdater.findAll(DEFAULT_INTERVAL);
         links.forEach(link -> log.debug("{} -- needs updating", link.url()));
         for (var link : links) {
-            boolean shouldUpdate = false;
+            boolean shouldUpdateGithub = false;
+            boolean shouldUpdateStackOverflow = false;
             if (GithubClient.isValidGithubUrl(link.url())) {
                 GithubCommitInfo[] details = githubClient.getGithubRepoCommitInfoByUri(link.url()).block();
                 if (details != null) {
@@ -48,7 +49,7 @@ public class LinkUpdaterScheduler {
                     if (last.length < details.length) {
                         log.debug("there have been commits made!");
                         linkUpdater.update(link.url().toString(), Packer.toJson(details));
-                        shouldUpdate = true;
+                        shouldUpdateGithub = true;
                     }
                 }
             } else if (StackOverflowClient.isValidStackOverflowUri(link.url())) {
@@ -59,18 +60,24 @@ public class LinkUpdaterScheduler {
                     if (last.items().length != details.items().length) {
                         log.debug("there have been answers made");
                         linkUpdater.update(link.url().toString(), Packer.toJson(details));
-                        shouldUpdate = true;
+                        shouldUpdateStackOverflow = true;
                     }
                 }
             }
-            if (shouldUpdate) {
-                List<Long> ids = linkService.listAllTgChatsWithLink(link.url());
-                botClient.update(
-                    new LinkUpdateRequest(
-                        0, link.url(), "commits have been made", ids
-                    )
-                ).subscribe().dispose();
+            if (shouldUpdateGithub) {
+                extracted(link, "commits have been made");
+            }
+            if (shouldUpdateStackOverflow) {
+                extracted(link, "new answers have been made");
             }
         }
+    }
+
+    private void extracted(LinkContent link, String message) {
+        List<Long> ids = linkService.listAllTgChatsWithLink(link.url());
+        botClient.update(
+            new LinkUpdateRequest(
+                0, link.url(), message, ids
+            )).subscribe().dispose();
     }
 }

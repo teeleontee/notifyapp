@@ -1,5 +1,8 @@
 package edu.java.configuration;
 
+import edu.java.dao.jooq.JooqLinkService;
+import edu.java.dao.jooq.JooqLinkUpdater;
+import edu.java.dao.jooq.JooqTgChatService;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.jooq.impl.DataSourceConnectionProvider;
@@ -42,5 +45,20 @@ public class JooqConfig {
     @Bean
     public DefaultDSLContext dsl() {
         return new DefaultDSLContext(configuration());
+    }
+
+    @Bean
+    public JooqLinkService jpaLinkService(DefaultDSLContext dsl) {
+        return new JooqLinkService(dsl);
+    }
+
+    @Bean
+    public JooqLinkUpdater jpaLinkUpdater(DefaultDSLContext dsl) {
+        return new JooqLinkUpdater(dsl);
+    }
+
+    @Bean
+    public JooqTgChatService jpaTgChatService(DefaultDSLContext dsl) {
+        return new JooqTgChatService(dsl);
     }
 }
